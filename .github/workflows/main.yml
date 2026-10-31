@@ -19,18 +19,22 @@ jobs:
         with:
           gradle-version: 9.6.0
 
-      - name: Listar arquivos do repositorio
-        run: find . -maxdepth 3 -not -path './.git/*' | sort
-
       - name: Achar a pasta do projeto
         id: find
         run: |
           F=$(find . -name settings.gradle -not -path './.git/*' | head -n 1)
           if [ -z "$F" ]; then
-            echo "ERRO: nenhum settings.gradle no repositorio. Os arquivos do projeto nao foram enviados."
+            echo "ERRO: nenhum settings.gradle no repositorio."
             exit 1
           fi
           echo "dir=$(dirname "$F")" >> "$GITHUB_OUTPUT"
+
+      - name: Corrigir nomes que mudaram no 26.3
+        run: |
+          J="${{ steps.find.outputs.dir }}/src/main/java/com/roubeumovo"
+          sed -i 's/Blocks.LIGHT_BLUE_CONCRETE/Blocks.LAPIS_BLOCK/' "$J/Biome.java"
+          sed -i 's/Blocks.COPPER_BLOCK/Blocks.RAW_COPPER_BLOCK/' "$J/Rarity.java"
+          sed -i 's/p.displayClientMessage(line, true);/p.connection.send(new net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket(line));/' "$J/Game.java"
 
       - name: Compilar
         working-directory: ${{ steps.find.outputs.dir }}
@@ -42,4 +46,3 @@ jobs:
           path: |
             ${{ steps.find.outputs.dir }}/build/libs/*.jar
             !${{ steps.find.outputs.dir }}/build/libs/*-sources.jar
-            
