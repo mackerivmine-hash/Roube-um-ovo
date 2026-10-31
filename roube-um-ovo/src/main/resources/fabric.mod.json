@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "roubeumovo",
+  "version": "${version}",
+  "name": "Roube um Ovo",
+  "description": "Roube ovos de ninhos e de outros jogadores, choque bichos e fique rico. Inspirado em Steal an Egg (Roblox).",
+  "authors": ["Voce"],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["com.roubeumovo.RoubeUmOvoMod"]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.3",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}
