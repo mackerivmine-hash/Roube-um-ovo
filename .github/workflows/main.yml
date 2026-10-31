@@ -19,12 +19,27 @@ jobs:
         with:
           gradle-version: 9.6.0
 
+      - name: Listar arquivos do repositorio
+        run: find . -maxdepth 3 -not -path './.git/*' | sort
+
+      - name: Achar a pasta do projeto
+        id: find
+        run: |
+          F=$(find . -name settings.gradle -not -path './.git/*' | head -n 1)
+          if [ -z "$F" ]; then
+            echo "ERRO: nenhum settings.gradle no repositorio. Os arquivos do projeto nao foram enviados."
+            exit 1
+          fi
+          echo "dir=$(dirname "$F")" >> "$GITHUB_OUTPUT"
+
       - name: Compilar
+        working-directory: ${{ steps.find.outputs.dir }}
         run: gradle build --stacktrace
 
       - uses: actions/upload-artifact@v4
         with:
           name: roube-um-ovo-jar
           path: |
-            build/libs/*.jar
-            !build/libs/*-sources.jar
+            ${{ steps.find.outputs.dir }}/build/libs/*.jar
+            !${{ steps.find.outputs.dir }}/build/libs/*-sources.jar
+            
